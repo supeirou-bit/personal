@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #000; color: #f0f0f0; overflow: hidden; height: 100vh; }
+.slides { width: 100%; height: 100vh; position: relative; }
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; opacity: 0; transform: translateX(60px); transition: opacity 0.5s ease, transform 0.5s ease; pointer-events: none; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: all; }
+.slide.exit { opacity: 0; transform: translateX(-60px); }
+
+/* ── SLIDE 1 ── */
+.slide-1 { justify-content: flex-end; align-items: flex-start; padding: 4rem; background: #000; overflow: hidden; }
+.s1-bg { position: absolute; inset: 0; cursor: pointer; overflow: hidden; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+.s1-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.s1-bg::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.25) 100%); }
+.s1-bg .bg-ph { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; }
+.s1-bg .bg-ph span { font-size: 2.5rem; }
+.s1-bg .bg-ph p { font-size: 0.65rem; color: #333; letter-spacing: 0.12em; text-transform: uppercase; }
+.bg-hint { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: rgba(0,0,0,0.45); opacity: 0; transition: opacity 0.2s; }
+.s1-bg:hover .bg-hint { opacity: 1; }
+.bg-hint span { font-size: 1.4rem; }
+.bg-hint p { font-size: 0.65rem; color: #ccc; letter-spacing: 0.12em; text-transform: uppercase; }
+.s1-quote { font-size: 7rem; font-weight: 900; color: #1c1c1c; line-height: 0.85; position: absolute; top: 1.5rem; left: 2rem; letter-spacing: -0.04em; user-select: none; z-index: 2; }
+.s1-num { position: absolute; top: 2rem; right: 2.5rem; font-size: 5rem; font-weight: 900; color: #111; letter-spacing: -0.04em; z-index: 2; }
+.s1-content { position: relative; z-index: 2; }
+.s1-name { font-size: 3.2rem; font-weight: 800; color: #fff; letter-spacing: -0.03em; line-height: 1; }
+.s1-bar { width: 48px; height: 3px; background: #fff; margin: 1rem 0 0.8rem; }
+.s1-tags { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.s1-tag { font-size: 0.7rem; letter-spacing: 0.18em; color: #555; text-transform: uppercase; border: 1px solid #222; padding: 0.3rem 0.7rem; border-radius: 999px; }
+
+/* ── SLIDE 2 ── */
+.slide-2 { justify-content: flex-end; align-items: flex-start; padding: 3rem; overflow: hidden; }
+.s2-bg { position: absolute; inset: 0; cursor: pointer; overflow: hidden; background: #0d0d0d; display: flex; align-items: center; justify-content: center; }
+.s2-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.s2-bg::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.1) 100%); }
+.s2-bg .bg-ph { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; }
+.s2-bg .bg-ph span { font-size: 2.5rem; }
+.s2-bg .bg-ph p { font-size: 0.65rem; color: #333; letter-spacing: 0.12em; text-transform: uppercase; }
+.s2-bg:hover .bg-hint { opacity: 1; }
+.s2-top-label { position: absolute; top: 2.5rem; left: 3rem; z-index: 10; font-size: 0.68rem; letter-spacing: 0.22em; color: #888; text-transform: uppercase; }
+.s2-ch-dots { position: absolute; right: 2.5rem; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+.s2-ch-dot { width: 7px; height: 7px; border-radius: 50%; background: #333; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+.s2-ch-dot.active { background: #fff; transform: scale(1.3); }
+.s2-ghost-num { position: absolute; bottom: 4rem; right: 3rem; font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.05); letter-spacing: -0.04em; z-index: 2; }
+.s2-content { position: relative; z-index: 5; max-width: 520px; }
+.s2-ch-label { font-size: 0.68rem; letter-spacing: 0.22em; color: #888; text-transform: uppercase; margin-bottom: 0.5rem; }
+.s2-ch-title { font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.6rem; }
+.s2-ch-desc { font-size: 0.9rem; color: #aaa; line-height: 1.65; max-width: 360px; }
+.s2-ch-extra { font-size: 0.75rem; color: #666; line-height: 1.7; max-width: 380px; margin-top: 0.6rem; }
+.s2-ch-note { font-size: 0.75rem; color: #666; letter-spacing: 0.08em; font-style: italic; margin-top: 0.8rem; }
+.s2-arrows { position: absolute; bottom: 3rem; right: 3rem; z-index: 10; display: flex; gap: 8px; }
+.s2-arr { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #333; background: none; color: #666; font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center; }
+.s2-arr:hover { border-color: #fff; color: #fff; }
+
+/* ── SLIDE 3 ── */
+.slide-3 { background: #000; padding: 2rem 2.5rem 5rem; justify-content: flex-start; align-items: flex-start; overflow-y: auto; }
+.s-label { font-size: 0.7rem; letter-spacing: 0.2em; color: #444; text-transform: uppercase; margin-bottom: 0.8rem; padding-top: 0.3rem; }
+.s3-section { font-size: 0.68rem; color: #444; letter-spacing: 0.18em; text-transform: uppercase; margin: 1rem 0 0.6rem; }
+.chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.chip { padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid #2a2a2a; font-size: 0.78rem; color: #aaa; }
+.dog-section { display: flex; gap: 1rem; margin-top: 0.2rem; }
+.dog-col { display: flex; flex-direction: column; gap: 0.4rem; }
+.dog-col-label { font-size: 0.65rem; letter-spacing: 0.16em; color: #555; text-transform: uppercase; text-align: center; }
+.dog-portrait { width: 100px; height: 100px; border-radius: 12px; background: #111; border: 1px solid #222; overflow: hidden; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
+.dog-portrait:hover { border-color: #444; }
+.dog-portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dog-portrait .ph { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dog-portrait .ph span { font-size: 2rem; }
+.dog-portrait .ph p { font-size: 0.55rem; color: #444; text-align: center; line-height: 1.3; }
+.slot-over { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; font-size: 0.6rem; color: #aaa; text-align: center; padding: 6px; line-height: 1.5; }
+.dog-portrait:hover .slot-over { opacity: 1; }
+.dog-daily-col { display: flex; flex-direction: column; gap: 0.4rem; }
+.dog-daily { width: 140px; height: 100px; border-radius: 12px; background: #111; border: 1px solid #222; overflow: hidden; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
+.dog-daily:hover { border-color: #444; }
+.dog-daily img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dog-daily .slot-over { position:absolute;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;font-size:0.6rem;color:#aaa;text-align:center;padding:6px;line-height:1.5; }
+.dog-daily:hover .slot-over { opacity:1; }
+.dog-bio { margin-top: 0.6rem; font-size: 0.72rem; color: #555; line-height: 1.8; max-width: 480px; }
+.dog-bio span { color: #888; }
+
+/* ── POSTER SLOTS ── */
+.poster-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.poster-slot { width: 62px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: #111; border: 1px solid #1e1e1e; cursor: pointer; position: relative; transition: border-color 0.2s; }
+.poster-slot:hover { border-color: #444; }
+.poster-img-area { width: 62px; height: 93px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.poster-img-area img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.poster-img-area .ph-icon { font-size: 1.2rem; color: #2a2a2a; }
+.poster-slot .slot-over { position:absolute;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;font-size:0.55rem;color:#aaa;text-align:center;padding:4px;line-height:1.4; }
+.poster-slot:hover .slot-over { opacity:1; }
+.poster-name { font-size: 0.52rem; color: #666; padding: 3px 4px 4px; text-align: center; line-height: 1.3; }
+.show-notes { margin-top: 0.6rem; font-size: 0.72rem; color: #555; line-height: 1.8; }
+
+/* ── SINGER SLOTS ── */
+.singer-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.singer-slot { padding: 0.45rem 0.9rem; border-radius: 8px; background: #111; border: 1px solid #1e1e1e; text-align: center; cursor: pointer; position: relative; transition: border-color 0.2s; }
+.singer-slot:hover { border-color: #444; }
+.singer-photo-wrap { width: 44px; height: 44px; border-radius: 50%; background: #1a1a1a; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; }
+.singer-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.singer-photo-wrap .ph-icon { font-size: 1.1rem; color: #2a2a2a; }
+.singer-slot .slot-over { position:absolute;inset:0;border-radius:8px;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;font-size:0.55rem;color:#aaa;text-align:center;padding:4px;line-height:1.4; }
+.singer-slot:hover .slot-over { opacity:1; }
+.singer-slot p { font-size: 0.72rem; color: #bbb; }
+.singer-slot small { font-size: 0.6rem; color: #555; }
+.music-note { margin-bottom: 0.6rem; font-size: 0.72rem; color: #555; line-height: 1.7; }
+
+/* ── SLIDE 4 ── */
+.slide-4 { justify-content: flex-end; align-items: flex-start; padding: 4rem; background: #000; overflow: hidden; }
+.s4-bg { position: absolute; inset: 0; cursor: pointer; overflow: hidden; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+.s4-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.s4-bg::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.25) 100%); }
+.s4-bg .bg-ph { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; }
+.s4-bg .bg-ph span { font-size: 2.5rem; }
+.s4-bg .bg-ph p { font-size: 0.65rem; color: #333; letter-spacing: 0.12em; text-transform: uppercase; }
+.s4-bg:hover .bg-hint { opacity: 1; }
+.s4-content { position: relative; z-index: 2; }
+.s4-small { font-size: 0.7rem; letter-spacing: 0.2em; color: #555; text-transform: uppercase; margin-bottom: 0.6rem; }
+.s4-big { font-size: 3.2rem; font-weight: 800; color: #fff; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.2rem; }
+.s4-bar { width: 32px; height: 2px; background: #fff; margin-bottom: 1rem; }
+.s4-line { font-size: 0.9rem; color: #555; line-height: 1.7; max-width: 340px; }
+
+input[type=file] { display: none; }
+
+/* ── NAV ── */
+.nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 0.5rem 1.2rem; z-index: 100; }
+.nav button { background: none; border: none; color: #555; font-size: 1rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; transition: color 0.2s; }
+.nav button:hover { color: #fff; }
+.dots { display: flex; gap: 6px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #333; transition: background 0.3s; cursor: pointer; }
+.dot.active { background: #fff; }
+.nav-label { font-size: 0.68rem; color: #444; min-width: 44px; text-align: center; }
+.save-btn { background: none; border: 1px solid #333; color: #555; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3rem 0.8rem; border-radius: 999px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+.save-btn:hover { border-color: #fff; color: #fff; }
+</style>
+</head>
+<body>
+<div class="slides">
+
+  <!-- SLIDE 1 -->
+  <div class="slide slide-1 active">
+    <div class="s1-bg" id="s1bg" onclick="document.getElementById('s1-input').click()">
+      <div class="bg-ph" id="s1-ph"><span>🖼️</span><p>Click to add background photo</p></div>
+      <div class="bg-hint"><span>🖼️</span><p>Click to change photo</p></div>
+    </div>
+    <input type="file" id="s1-input" accept="image/*" onchange="loadBg('s1bg','s1-ph',this)">
+    <div class="s1-quote">"</div>
+    <div class="s1-num">01</div>
+    <div class="s1-content">
+      <div class="s1-name">PEIROU SU</div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:0.3rem;">
+        <div style="font-size:1rem;color:#888;letter-spacing:0.18em;">Theo</div>
+        <div style="font-size:0.68rem;color:#555;letter-spacing:0.08em;">INTJ-A &nbsp;|&nbsp; 2000.4.22 &nbsp;|&nbsp; 太阳金牛</div>
+      </div>
+      <div class="s1-bar"></div>
+      <div class="s1-tags">
+        <span class="s1-tag">Dreamer</span>
+        <span class="s1-tag">Creator</span>
+        <span class="s1-tag">Explorer</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide slide-2">
+    <div class="s2-bg" id="s2bg" onclick="document.getElementById('s2-input').click()">
+      <div class="bg-ph" id="s2-ph"><span>🖼️</span><p>Click to add background photo</p></div>
+      <div class="bg-hint"><span>🖼️</span><p>Click to change photo</p></div>
+    </div>
+    <input type="file" id="s2-input" accept="image/*" onchange="loadChapterBg(this)">
+    <div class="s2-top-label">My Story</div>
+    <div class="s2-ch-dots" id="s2dots">
+      <div class="s2-ch-dot active" onclick="chGoTo(0)"></div>
+      <div class="s2-ch-dot" onclick="chGoTo(1)"></div>
+      <div class="s2-ch-dot" onclick="chGoTo(2)"></div>
+      <div class="s2-ch-dot" onclick="chGoTo(3)"></div>
+    </div>
+    <div class="s2-ghost-num" id="s2ghost">01</div>
+    <div class="s2-content">
+      <div class="s2-ch-label" id="s2label">Early days</div>
+      <div class="s2-ch-title" id="s2title">Where it began</div>
+      <div class="s2-ch-desc" id="s2desc">Born curious — always asking why and how things work. That spark never left.</div>
+      <div class="s2-ch-extra" id="s2extra">Born and raised in Foshan, Guangdong — basically next to Guangzhou. Bachelor in Beijing, then studied abroad, now in Shenzhen. Came here for more opportunities, faster pace, and easy access to Hong Kong.</div>
+      <div class="s2-ch-note" id="s2note" style="display:none;"></div>
+    </div>
+    <div class="s2-arrows">
+      <button class="s2-arr" onclick="chGoTo(ch-1)">&#8592;</button>
+      <button class="s2-arr" onclick="chGoTo(ch+1)">&#8594;</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide slide-3">
+    <div class="s-label">About Me</div>
+
+    <div class="s3-section">Hobbies</div>
+    <div class="chips">
+      <span class="chip">🎵 Music</span>
+      <span class="chip">🎨 Fine Art</span>
+      <span class="chip">🎬 Movies & TV</span>
+      <span class="chip">🥾 Hiking</span>
+      <span class="chip">🌿 Nature</span>
+      <span class="chip">⛺ Camping</span>
+      <span class="chip">🤖 Chat with AI</span>
+    </div>
+
+    <div class="s3-section">My Furry Duo 🐾</div>
+    <div class="dog-section">
+      <div class="dog-col">
+        <div class="dog-portrait" id="kano-slot" onclick="document.getElementById('kano-input').click()">
+          <div class="ph"><span>🐶</span><p>Kano's selfie</p></div>
+          <div class="slot-over">Click to add<br>Kano's photo</div>
+        </div>
+        <div class="dog-col-label">Kano</div>
+        <input type="file" id="kano-input" accept="image/*" onchange="loadSlot('kano-slot',this)">
+      </div>
+      <div class="dog-col">
+        <div class="dog-portrait" id="ivy-slot" onclick="document.getElementById('ivy-input').click()">
+          <div class="ph"><span>🐶</span><p>Ivy's selfie</p></div>
+          <div class="slot-over">Click to add<br>Ivy's photo</div>
+        </div>
+        <div class="dog-col-label">Ivy</div>
+        <input type="file" id="ivy-input" accept="image/*" onchange="loadSlot('ivy-slot',this)">
+      </div>
+      <div class="dog-daily-col">
+        <div class="dog-daily" id="daily-slot" onclick="document.getElementById('daily-input').click()">
+          <div class="ph" style="display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:1.6rem;">📸</span><p style="font-size:0.55rem;color:#444;text-align:center;line-height:1.3;">Today's chaos</p></div>
+          <div class="slot-over">Click to add<br>their daily photo</div>
+        </div>
+        <div class="dog-col-label">Daily</div>
+        <input type="file" id="daily-input" accept="image/*" onchange="loadSlot('daily-slot',this)">
+      </div>
+    </div>
+    <div class="dog-bio">
+      <div><span>Kano</span> — Chocolate long-haired dachshund, almost 3 years old. The big brother. Used to be calm and mature... until Ivy arrived.</div>
+      <div style="margin-top:0.3rem;"><span>Ivy</span> — Black long-haired dachshund, 3 months old. The little chaos engine. Her daily mission: bite brother's fur, climb on his back, and chase him around.</div>
+    </div>
+
+    <div class="s3-section">Recently Watched <span style="font-size:0.6rem;color:#555;letter-spacing:0.05em;text-transform:none;font-weight:400;">— Mostly mystery & whodunit lover</span></div>
+    <div class="poster-row">
+      <div class="poster-slot" id="ps-0" onclick="document.getElementById('pi-0').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Young Sherlock</div></div>
+      <input type="file" id="pi-0" accept="image/*" onchange="loadPoster('ps-0',this)">
+      <div class="poster-slot" id="ps-1" onclick="document.getElementById('pi-1').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Towards Zero</div></div>
+      <input type="file" id="pi-1" accept="image/*" onchange="loadPoster('ps-1',this)">
+      <div class="poster-slot" id="ps-2" onclick="document.getElementById('pi-2').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Under Salt Marsh</div></div>
+      <input type="file" id="pi-2" accept="image/*" onchange="loadPoster('ps-2',this)">
+      <div class="poster-slot" id="ps-3" onclick="document.getElementById('pi-3').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Olive Kitteridge</div></div>
+      <input type="file" id="pi-3" accept="image/*" onchange="loadPoster('ps-3',this)">
+      <div class="poster-slot" id="ps-4" onclick="document.getElementById('pi-4').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">The Intouchables</div></div>
+      <input type="file" id="pi-4" accept="image/*" onchange="loadPoster('ps-4',this)">
+      <div class="poster-slot" id="ps-5" onclick="document.getElementById('pi-5').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Douglas Is Cancelled</div></div>
+      <input type="file" id="pi-5" accept="image/*" onchange="loadPoster('ps-5',this)">
+      <div class="poster-slot" id="ps-6" onclick="document.getElementById('pi-6').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Odd Taxi</div></div>
+      <input type="file" id="pi-6" accept="image/*" onchange="loadPoster('ps-6',this)">
+      <div class="poster-slot" id="ps-7" onclick="document.getElementById('pi-7').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Magpie Murders</div></div>
+      <input type="file" id="pi-7" accept="image/*" onchange="loadPoster('ps-7',this)">
+      <div class="poster-slot" id="ps-8" onclick="document.getElementById('pi-8').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Witness for Pros.</div></div>
+      <input type="file" id="pi-8" accept="image/*" onchange="loadPoster('ps-8',this)">
+      <div class="poster-slot" id="ps-9" onclick="document.getElementById('pi-9').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Moonflower Murders</div></div>
+      <input type="file" id="pi-9" accept="image/*" onchange="loadPoster('ps-9',this)">
+      <div class="poster-slot" id="ps-10" onclick="document.getElementById('pi-10').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">The Residence</div></div>
+      <input type="file" id="pi-10" accept="image/*" onchange="loadPoster('ps-10',this)">
+      <div class="poster-slot" id="ps-11" onclick="document.getElementById('pi-11').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">MIU 404</div></div>
+      <input type="file" id="pi-11" accept="image/*" onchange="loadPoster('ps-11',this)">
+      <div class="poster-slot" id="ps-12" onclick="document.getElementById('pi-12').click()"><div class="poster-img-area"><span class="ph-icon">🎬</span></div><div class="slot-over">Upload poster</div><div class="poster-name">Ludwig</div></div>
+      <input type="file" id="pi-12" accept="image/*" onchange="loadPoster('ps-12',this)">
+    </div>
+    <div class="show-notes">
+      <div>The Residence (白宫杀人案) — Shonda Rhimes' new series. Classic detective style set in the White House — clever puzzles and fun characters.</div>
+      <div style="margin-top:0.3rem;">Magpie Murders &amp; Moonflower Murders — "Story within a story" structure.</div>
+      <div style="margin-top:0.3rem;">Ludwig (谜探路德维希) — Currently watching. Feels promising so far.</div>
+    </div>
+
+    <div class="s3-section">Music I Love <span style="font-size:0.6rem;color:#2a2a2a;">(just between us)</span></div>
+    <div class="music-note">Been listening to these three since high school — still my go-to after all these years. Aesthetic is personal — listen at your own risk.</div>
+    <div class="singer-row">
+      <div class="singer-slot" id="ss-0" onclick="document.getElementById('si-0').click()">
+        <div class="singer-photo-wrap"><span class="ph-icon">🎵</span></div>
+        <div class="slot-over">Upload photo</div>
+        <p>Lauv</p><small>indie pop</small>
+      </div>
+      <input type="file" id="si-0" accept="image/*" onchange="loadSinger('ss-0',this)">
+      <div class="singer-slot" id="ss-1" onclick="document.getElementById('si-1').click()">
+        <div class="singer-photo-wrap"><span class="ph-icon">🎵</span></div>
+        <div class="slot-over">Upload photo</div>
+        <p>Jeremy Zucker</p><small>indie pop</small>
+      </div>
+      <input type="file" id="si-1" accept="image/*" onchange="loadSinger('ss-1',this)">
+      <div class="singer-slot" id="ss-2" onclick="document.getElementById('si-2').click()">
+        <div class="singer-photo-wrap"><span class="ph-icon">🎵</span></div>
+        <div class="slot-over">Upload photo</div>
+        <p>LANY</p><small>indie pop</small>
+      </div>
+      <input type="file" id="si-2" accept="image/*" onchange="loadSinger('ss-2',this)">
+    </div>
+  </div>
+
+  <!-- SLIDE 4 -->
+  <div class="slide slide-4">
+    <div class="s4-bg" id="s4bg" onclick="document.getElementById('s4-input').click()">
+      <div class="bg-ph" id="s4-ph"><span>🖼️</span><p>Click to add background photo</p></div>
+      <div class="bg-hint"><span>🖼️</span><p>Click to change photo</p></div>
+    </div>
+    <input type="file" id="s4-input" accept="image/*" onchange="loadBg('s4bg','s4-ph',this)">
+    <div class="s4-content">
+      <div class="s4-small">— end of presentation</div>
+      <div class="s4-big">Thank<br>You.</div>
+      <div class="s4-bar"></div>
+      <div class="s4-line">For taking the time to peek into my world — the things I love, the places I've been, and the stories that made me who I am.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button onclick="goTo((cur+3)%4)">&#8592;</button>
+  <div class="dots">
+    <div class="dot active" onclick="goTo(0)"></div>
+    <div class="dot" onclick="goTo(1)"></div>
+    <div class="dot" onclick="goTo(2)"></div>
+    <div class="dot" onclick="goTo(3)"></div>
+  </div>
+  <button onclick="goTo((cur+1)%4)">&#8594;</button>
+  <span class="nav-label" id="lbl">1 / 4</span>
+  <button class="save-btn" onclick="saveFile()">Save</button>
+</div>
+
+<script>
+// ── Slide nav ──
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+let cur = 0;
+function goTo(n) {
+  slides[cur].classList.remove('active'); slides[cur].classList.add('exit');
+  const prev = cur; cur = n;
+  slides[cur].classList.add('active');
+  dots.forEach((d,i) => d.classList.toggle('active', i===cur));
+  document.getElementById('lbl').textContent = (cur+1)+' / 4';
+  setTimeout(() => slides[prev].classList.remove('exit'), 600);
+}
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight') goTo((cur+1)%4);
+  if(e.key==='ArrowLeft') goTo((cur+3)%4);
+});
+
+// ── Background loader ──
+function loadBg(slotId, phId, input) {
+  if (!input.files || !input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const slot = document.getElementById(slotId);
+    const ph = document.getElementById(phId);
+    if (ph) ph.style.display = 'none';
+    let img = slot.querySelector('img');
+    if (!img) { img = document.createElement('img'); img.alt='background'; slot.insertBefore(img, slot.firstChild); }
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+// ── Small slot loaders ──
+function loadSlot(slotId, input) {
+  if (!input.files || !input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const slot = document.getElementById(slotId);
+    slot.innerHTML = `<img src="${e.target.result}" alt="photo" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+function loadPoster(slotId, input) {
+  if (!input.files || !input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => { document.querySelector('#'+slotId+' .poster-img-area').innerHTML = '<img src="'+e.target.result+'" alt="poster">'; };
+  r.readAsDataURL(input.files[0]);
+}
+function loadSinger(slotId, input) {
+  if (!input.files || !input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => { document.querySelector('#'+slotId+' .singer-photo-wrap').innerHTML = '<img src="'+e.target.result+'" alt="singer">'; };
+  r.readAsDataURL(input.files[0]);
+}
+
+// ── Slide 2 chapters ──
+const chapters = [
+  { label:"Early days",  title:"Where it began",        desc:"Born curious — always asking why and how things work. That spark never left.",        num:"01", img:null, extra:"Born and raised in Foshan, Guangdong — basically next to Guangzhou. Bachelor in Beijing, then studied abroad, now in Shenzhen. Came here for more opportunities, faster pace, and easy access to Hong Kong.", note:null },
+  { label:"Growing up",  title:"Discovering creativity", desc:"Found a love for art, music, and making things — a world of imagination opened up.",  num:"02", img:null, extra:null, note:"新天鹅堡白描" },
+  { label:"Adventures",  title:"Exploring the world",    desc:"Collecting moments, new places, and the kind of memories that stay with you forever.", num:"03", img:null, extra:null, note:"《维纳斯的诞生》—— 波提切利" },
+  { label:"Today",       title:"Here & now",             desc:"Chasing meaningful projects, learning every day — sharing the journey with you.",      num:"04", img:null, extra:null, note:null }
+];
+let ch = 0;
+
+function updateS2Bg() {
+  const slot = document.getElementById('s2bg');
+  const ph = document.getElementById('s2-ph');
+  let img = slot.querySelector('img');
+  if (chapters[ch].img) {
+    if (!img) { img = document.createElement('img'); img.alt='background'; slot.insertBefore(img, slot.firstChild); }
+    img.src = chapters[ch].img;
+    img.style.display = 'block';
+    if (ph) ph.style.display = 'none';
+  } else {
+    if (img) { img.src=''; img.style.display='none'; }
+    if (ph) ph.style.display = 'flex';
+  }
+}
+
+function chGoTo(n) {
+  ch = ((n % 4) + 4) % 4;
+  const c = chapters[ch];
+  document.getElementById('s2label').textContent = c.label;
+  document.getElementById('s2title').textContent = c.title;
+  document.getElementById('s2desc').textContent = c.desc;
+  document.getElementById('s2ghost').textContent = c.num;
+  const extraEl = document.getElementById('s2extra');
+  extraEl.textContent = c.extra || '';
+  extraEl.style.display = c.extra ? 'block' : 'none';
+  const noteEl = document.getElementById('s2note');
+  noteEl.textContent = c.note || '';
+  noteEl.style.display = c.note ? 'block' : 'none';
+  document.querySelectorAll('.s2-ch-dot').forEach((d,i) => d.classList.toggle('active', i===ch));
+  updateS2Bg();
+}
+
+function loadChapterBg(input) {
+  if (!input.files || !input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => { chapters[ch].img = e.target.result; updateS2Bg(); input.value=''; };
+  r.readAsDataURL(input.files[0]);
+}
+
+// ── Save ──
+function saveFile() {
+  const existing = document.getElementById('baked-chapters');
+  if (existing) existing.remove();
+  const bake = document.createElement('script');
+  bake.id = 'baked-chapters';
+  bake.textContent = 'window.__bakedChapters='+JSON.stringify(chapters.map(c=>c.img||null))+';';
+  document.head.appendChild(bake);
+  const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'peirou-slides.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ── Restore chapter bg images on load ──
+if (window.__bakedChapters) {
+  window.__bakedChapters.forEach((img,i) => { if (img) chapters[i].img = img; });
+  updateS2Bg();
+}
+</script>
+</body>
+</html>
